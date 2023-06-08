@@ -74,6 +74,13 @@ class ShortUrlController extends Controller
 
         $url->increment('clicks');
 
+        try {
+            get_headers($url->url);
+        } catch (\Exception $e) {
+            $url->url = str_replace('://www.', '://', $url->url);
+            return redirect($url->url);
+        }
+
         return redirect($url->url);
     }
 }
