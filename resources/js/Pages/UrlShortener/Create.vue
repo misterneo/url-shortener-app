@@ -22,8 +22,11 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.post(route("url.shorten"));
-    form.url = "";
+    form.post(route("url.shorten"), {
+        onSuccess: () => {
+            form.reset("url");
+        },
+    });
 };
 </script>
 

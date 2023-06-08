@@ -13,10 +13,7 @@ class ShortUrlController extends Controller
     public function index()
     {
         $urls = ShortUrl::orderby('clicks', 'desc')->paginate(10);
-
-        return Inertia::render('UrlShortener/Create', [
-            'urls' => $urls
-        ]);
+        return Inertia::render('UrlShortener/Create', compact('urls'));
     }
 
     public function store(ShortenUrlRequest $request)
@@ -48,13 +45,10 @@ class ShortUrlController extends Controller
 
         $oldUrl = ShortUrl::where('url', $url)->first();
 
-        $urls = ShortUrl::orderby('clicks', 'desc')->paginate(10);
-
         if ($oldUrl) {
-            return Inertia::render('UrlShortener/Create', [
-                'urls' => $urls,
-                'url' => request()->getSchemeAndHttpHost() . '/' . $oldUrl->code,
-            ]);
+            $urls = ShortUrl::orderby('clicks', 'desc')->paginate(10);
+            $url = request()->getSchemeAndHttpHost() . '/' . $oldUrl->code;
+            return Inertia::render('UrlShortener/Create', compact('url', 'urls'));
         }
 
         $newUrl = ShortUrl::create([
@@ -62,10 +56,10 @@ class ShortUrlController extends Controller
             'code' => Str::random(4)
         ]);
 
-        return Inertia::render('UrlShortener/Create', [
-            'urls' => $urls,
-            'url' => request()->getSchemeAndHttpHost() . '/' . $newUrl->code,
-        ]);
+        $urls = ShortUrl::orderby('clicks', 'desc')->paginate(10);
+        $url = request()->getSchemeAndHttpHost() . '/' . $newUrl->code;
+
+        return Inertia::render('UrlShortener/Create', compact('url', 'urls'));
     }
 
     public function redirect($code)
